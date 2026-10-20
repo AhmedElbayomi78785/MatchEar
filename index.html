@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MatchEar</title>
+<meta name="description" content="MatchEar delivers live football through sound and vibration, built for blind and low-vision fans.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ======= SPLASH / ONBOARDING ======= -->
+<section id="splash" class="splash" aria-label="Welcome">
+  <div class="splash-inner">
+    <div class="crest" aria-hidden="true">
+      <svg viewBox="0 0 96 96" width="88" height="88">
+        <circle cx="48" cy="48" r="44" fill="none" stroke="currentColor" stroke-width="5"/>
+        <path d="M34 48a14 14 0 0 1 14-14" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        <path d="M27 48a21 21 0 0 1 21-21" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".55"/>
+        <circle cx="52" cy="56" r="7" fill="currentColor"/>
+      </svg>
+    </div>
+    <h1 class="wordmark">MatchEar</h1>
+    <p class="tagline" data-i18n="tagline">The match, in your ear and your pocket.</p>
+
+    <div class="lang-pick" role="group" aria-label="Choose language">
+      <button class="btn lang" data-lang="en" aria-pressed="true">English</button>
+      <button class="btn lang" data-lang="ar" lang="ar" aria-pressed="false">العربية</button>
+    </div>
+
+    <button id="startBtn" class="btn primary start" data-i18n="start">Start listening</button>
+    <p class="hint" data-i18n="startHint">Starting turns on the voice. Use headphones in loud places.</p>
+  </div>
+</section>
+
+<!-- ======= APP ======= -->
+<div id="app" class="app" hidden>
+
+  <header class="topbar">
+    <span class="brand">MatchEar</span>
+    <span class="live-dot" id="liveDot" hidden><i aria-hidden="true"></i><b data-i18n="live">Live</b></span>
+  </header>
+
+  <main id="main">
+
+    <!-- HOME: real fixtures only -->
+    <section class="screen" id="screen-home" role="tabpanel" aria-labelledby="tab-home">
+      <h2 class="screen-title" data-i18n="todays">Today's matches</h2>
+      <div id="fixtures" aria-live="polite"></div>
+      <p class="note" data-i18n="homeNote">Fixtures and scores come from TheSportsDB. Want to feel the goal alerts and voice first? The Demo tab runs a simulated derby.</p>
+    </section>
+
+    <!-- LIVE: the real match you opened -->
+    <section class="screen" id="screen-live" role="tabpanel" aria-labelledby="tab-live" hidden>
+      <div id="liveEmpty">
+        <h2 class="screen-title" data-i18n="liveEmptyTitle">No match open</h2>
+        <p class="note" data-i18n="liveEmptyBody">Pick a match from Home and it opens here with the score read out loud. The Demo tab has a simulated match with every feature on.</p>
+        <button class="btn" id="goHomeBtn" data-i18n="goHome">Go to Home</button>
+      </div>
+
+      <div id="liveWrap" hidden>
+        <div class="scoreboard real" aria-live="off">
+          <div class="sb-row" id="realHeader">
+            <span class="sb-side"><img id="homeBadge" class="crest-xl" alt=""><b id="homeName"></b></span>
+            <span class="score" id="rScore">–</span>
+            <span class="sb-side"><img id="awayBadge" class="crest-xl" alt=""><b id="awayName"></b></span>
+          </div>
+          <div class="clock" id="rClock"></div>
+        </div>
+        <p class="note meta" id="matchMeta"></p>
+        <div class="strip" id="rStrip" role="img" aria-label=""></div>
+
+        <div class="controls">
+          <button class="btn" id="rRepeat" data-i18n="repeat">Repeat last event</button>
+          <button class="btn mute-btn" data-i18n="mute">Mute voice</button>
+        </div>
+        <button class="btn remind" id="remindBtn" hidden aria-pressed="false">🔕 Remind me 15 minutes before kickoff</button>
+        <div id="rFeedWrap" hidden>
+          <h2 class="feed-title" data-i18n="feedReal">Match events, newest first</h2>
+          <ol class="feed" id="rFeed" aria-live="polite"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO: simulated derby, always running -->
+    <section class="screen" id="screen-demo" role="tabpanel" aria-labelledby="tab-demo" hidden>
+      <div class="scoreboard" aria-live="off">
+        <span class="mode-tag" data-i18n="trialTag">Trial match</span>
+        <div class="teams" id="dScoreTeams">
+          <span class="team">AL AHLY</span>
+          <span class="score" id="dScore">1–0</span>
+          <span class="team">ZAMALEK</span>
+        </div>
+        <div class="clock" id="dClock">60:00</div>
+      </div>
+      <div class="strip" id="dStrip" role="img" aria-label=""></div>
+      <p class="note" data-i18n="demoNote">A simulated Cairo derby, so you can try the goal alert, the vibration, Ask and the replay without waiting for a real game.</p>
+
+      <div class="controls">
+        <button class="btn" id="dRepeat" data-i18n="repeat">Repeat last event</button>
+        <button class="btn mute-btn" data-i18n="mute">Mute voice</button>
+      </div>
+
+      <div id="feedWrap">
+        <h2 class="feed-title" data-i18n="events">Events, newest first</h2>
+        <ol class="feed" id="feed" aria-live="polite"></ol>
+      </div>
+
+      <button class="btn replay" id="replayBtn" hidden data-i18n="replay">Play highlights by ear</button>
+    </section>
+
+    <!-- ASK -->
+    <section class="screen" id="screen-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
+      <h2 class="screen-title" data-i18n="askTitle">Ask about the match</h2>
+
+      <button class="btn primary holdask" id="askVoiceBtn">
+        <span data-i18n="holdAsk">Hold to ask</span>
+        <span class="sub" id="askState" data-i18n="askReady">Voice is ready</span>
+      </button>
+
+      <div class="answer" id="answer" hidden></div>
+
+      <h3 class="feed-title" data-i18n="quick">Quick questions</h3>
+      <div class="quick">
+        <button class="btn q" data-q="who" data-i18n="qWho">Who scored?</button>
+        <button class="btn q" data-q="score" data-i18n="qScore">What's the score?</button>
+        <button class="btn q" data-q="time" data-i18n="qTime">How long is left?</button>
+        <button class="btn q" data-q="cards" data-i18n="qCards">Any cards?</button>
+      <button class="btn q" data-q="stats" data-i18n="qStats">Match stats?</button>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <h2 class="screen-title" data-i18n="settings">Settings</h2>
+
+      <div class="setting">
+        <span data-i18n="language">Language</span>
+        <button class="btn s" id="langBtn">العربية</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="voiceSpeed">Voice speed</span>
+        <button class="btn s" id="speedBtn" data-i18n="speedNormal">Normal</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="verbosity">Announcements</span>
+        <button class="btn s" id="verbosityBtn" data-i18n="verbAll">All events</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="vibration">Vibration alerts</span>
+        <button class="btn s" id="hapticsBtn" data-i18n="on">On</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="contrast">High contrast</span>
+        <button class="btn s" id="contrastBtn" data-i18n="off">Off</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="textSize">Text size</span>
+        <button class="btn s" id="textBtn" data-i18n="sizeLarge">Large</button>
+      </div>
+      <div class="setting">
+        <span data-i18n="dataSaver">Data saver</span>
+        <button class="btn s" id="dataBtn" data-i18n="on">On</button>
+      </div>
+
+      <p class="note" data-i18n="settingsNote">Your choices are saved on this device. Switching language flips the whole app to right-to-left Arabic, voice included.</p>
+      <p class="about">MatchEar · COMP 3451 design project</p>
+    </section>
+  </main>
+
+  <!-- GOAL TAKEOVER -->
+  <div class="takeover" id="takeover" hidden>
+    <div class="takeover-inner">
+      <p class="t-word" id="tWord">GOAL!</p>
+      <p class="t-detail" id="tDetail">Zizo · 63'</p>
+      <p class="t-score" id="tScore">Al Ahly 2–0 Zamalek</p>
+      <div class="waveform" id="waveform" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <p class="t-hint" data-i18n="tapContinue">Tap anywhere to continue</p>
+    </div>
+  </div>
+
+  <!-- SPOKEN LINE (what a screen reader / the voice says) -->
+  <div class="announcer" id="announcer" role="status" aria-live="assertive"></div>
+
+  <nav class="tabbar" role="tablist" aria-label="Main">
+    <button class="tab" id="tab-home" role="tab" aria-selected="true" data-screen="home" data-i18n="tHome">Home</button>
+    <button class="tab" id="tab-live" role="tab" aria-selected="false" data-screen="live" data-i18n="tLive">Live</button>
+    <button class="tab" id="tab-demo" role="tab" aria-selected="false" data-screen="demo" data-i18n="tDemo">Demo</button>
+    <button class="tab" id="tab-ask" role="tab" aria-selected="false" data-screen="ask" data-i18n="tAsk">Ask</button>
+    <button class="tab" id="tab-settings" role="tab" aria-selected="false" data-screen="settings" data-i18n="tSettings">Settings</button>
+  </nav>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
